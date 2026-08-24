@@ -1,2 +1,3 @@
 # owq
-rblx internal scripts
+fuck away
+:3 

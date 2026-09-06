@@ -1,7 +1,27 @@
--- rewritted arcane uilib by arcane228 for matcha on potassium
--- just for mine poor vr scripts
-
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local wait = task.wait
+local spawn = task.spawn
+
+local function ismouse1pressed()
+    return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+end
+
+local function ismouse2pressed()
+    return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+end
+
+local function iskeypressed(keyCode)
+    if type(keyCode) == "number" then
+        local name = ReverseKeyCodeNames and ReverseKeyCodeNames[keyCode]
+        if name and Enum.KeyCode[name] then
+            return UserInputService:IsKeyDown(Enum.KeyCode[name])
+        end
+        return false
+    end
+    return UserInputService:IsKeyDown(keyCode)
+end
 
 Neverlose = {}
 drawings = {}
@@ -151,50 +171,16 @@ local themes = {
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
-local UserInputService = game:GetService("UserInputService")
-local _keyStates = {}
-local _mouseStates = { [1] = false, [2] = false }
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if input.UserInputType == Enum.UserInputType.Keyboard then
-        _keyStates[input.KeyCode.Name] = true
-    elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
-        _mouseStates[1] = true
-    elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-        _mouseStates[2] = true
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    if input.UserInputType == Enum.UserInputType.Keyboard then
-        _keyStates[input.KeyCode.Name] = false
-    elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
-        _mouseStates[1] = false
-    elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-        _mouseStates[2] = false
-    end
-end)
-
-function iskeypressed(kc)
-    if type(kc) == "number" then
-        local name = ReverseKeyCodeNames[kc]
-        if name then return _keyStates[name] or false end
-        return false
-    elseif type(kc) == "string" then
-        return _keyStates[kc] or false
-    else
-        return false
-    end
+local function getMousePos()
+    local mouseLocation = UserInputService:GetMouseLocation()
+    return Vector2.new(mouseLocation.X, mouseLocation.Y)
 end
 
-function ismouse1pressed()
-    return _mouseStates[1]
+local function isMouseOver(pos, size)
+    local m = getMousePos()
+    return m.X >= pos.X and m.X <= pos.X + size.X
+    and m.Y >= pos.Y and m.Y <= pos.Y + size.Y
 end
-
-function ismouse2pressed()
-    return _mouseStates[2]
-end
-
 
 local function lerp(a, b, t)
     if not a or not b or not t then return 0 end
@@ -248,16 +234,6 @@ local function createGlow(obj, size, pos, corner, spread, color)
         Insert(drawings, glow)
     end
     return layers
-end
-
-local function getMousePos()
-    return Vector2.new(Mouse.X, Mouse.Y)
-end
-
-local function isMouseOver(pos, size)
-    local m = getMousePos()
-    return m.X >= pos.X and m.X <= pos.X + size.X
-    and m.Y >= pos.Y and m.Y <= pos.Y + size.Y
 end
 
 local KeyCodeNames = {
